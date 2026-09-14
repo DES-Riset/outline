@@ -1,0 +1,25 @@
+services:
+  outline:
+    image: outlinewiki/outline:latest
+    container_name: outline
+    restart: unless-stopped
+      - "3002:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+    networks:
+      - outline-internal
+      - camuda-infra_default
+volumes:
+  postgres-data:
+    driver: local
+
+networks:
+  outline-internal:
+    driver: bridge
+  camuda-infra_default:
+    external: true
