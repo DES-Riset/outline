@@ -10,8 +10,6 @@ services:
       SECRET_KEY: ${SECRET_KEY}
       UTILS_SECRET_KEY: ${UTILS_SECRET_KEY}
       URL: ${URL}
-      PORT: 3000
-
       # Database (PostgreSQL Existing)
       DATABASE_URL: postgres://${PG_USER}:${PG_PASS}@${PG_HOST:-postgres_db}:5432/${PG_DB}
 
@@ -36,7 +34,7 @@ services:
       OIDC_DISPLAY_NAME: ${OIDC_DISPLAY_NAME}
 
     ports:
-      - "3000:3000"
+      - "3009:3000"
     volumes:
       - /opt/docker/apps/outline/data:/var/lib/outline/data
     networks:
