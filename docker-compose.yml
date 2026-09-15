@@ -1,25 +1,49 @@
+version: '3.8'
+
 services:
   outline:
-    image: outlinewiki/outline:latest
-    container_name: outline
+    image: docker.getoutline.com/outlinewiki/outline:latest
+    container_name: outline_app
     restart: unless-stopped
-    ports:
-      - "3002:3000"
-    depends_on:
-      postgres:
-        condition: service_healthy
+    env_file:
+      - .env
     environment:
-      NODE_ENV: production
+      # General
+      SECRET_KEY: ${SECRET_KEY}
+      UTILS_SECRET_KEY: ${UTILS_SECRET_KEY}
+      URL: ${URL}
+      PORT: 3000
+
+      # Database (PostgreSQL Existing)
+      DATABASE_URL: postgres://${PG_USER}:${PG_PASS}@${PG_HOST:-postgres_db}:5432/${PG_DB}
+
+      # Redis Existing
+      REDIS_URL: redis://:${REDIS_PASSWORD}@${REDIS_HOST:-redis_server}:6379
+
+      # Storage (MinIO)
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_REGION: ${AWS_REGION}
+      AWS_S3_SURGICAL_URL: ${AWS_S3_SURGICAL_URL}
+      AWS_S3_UPLOAD_BUCKET_URL: ${AWS_S3_UPLOAD_BUCKET_URL}
+      AWS_S3_UPLOAD_BUCKET_NAME: ${AWS_S3_UPLOAD_BUCKET_NAME}
+      AWS_S3_FORCE_PATH_STYLE: "true"
+
+      # Authentication (Authentik SSO via OIDC)
+      OIDC_CLIENT_ID: ${OIDC_CLIENT_ID}
+      OIDC_CLIENT_SECRET: ${OIDC_CLIENT_SECRET}
+      OIDC_AUTH_URI: ${OIDC_AUTH_URI}
+      OIDC_TOKEN_URI: ${OIDC_TOKEN_URI}
+      OIDC_USERINFO_URI: ${OIDC_USERINFO_URI}
+      OIDC_DISPLAY_NAME: ${OIDC_DISPLAY_NAME}
+
+    ports:
+      - "3000:3000"
+    volumes:
+      - /opt/docker/apps/outline/data:/var/lib/outline/data
     networks:
-      - camuda-infra_default
-     env_file:
-      - /opt/docker/outline/.env 
-volumes:
-  postgres-data:
-    driver: local
-    
+      - shared_apps
+
 networks:
-  outline-internal:
-    driver: bridge
-  camuda-infra_default:
+  shared_apps:
     external: true
