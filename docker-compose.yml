@@ -5,8 +5,6 @@ services:
     image: docker.getoutline.com/outlinewiki/outline:latest
     container_name: outline_app
     restart: unless-stopped
-    env_file:
-      - .env
     environment:
       # General
       SECRET_KEY: ${SECRET_KEY}
